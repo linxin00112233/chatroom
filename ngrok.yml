@@ -1,0 +1,10 @@
+version: "2"
+authtoken: "你的令牌"
+tunnels:
+  #addr: 本地端口
+  api:
+    proto: http
+    addr: 3000
+  web:
+    proto: http
+    addr: 5500
