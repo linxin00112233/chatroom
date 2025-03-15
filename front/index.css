@@ -38,6 +38,7 @@ body {
     text-align: center;
     font-size: 11px;
     color: #e62e16;
+    margin-top: 10px;
 }
 
 .msg {
@@ -66,4 +67,46 @@ body {
     width: 100%;
     height: 100%;
     opacity: 0;
+}
+
+.sendimg {
+    width: 100px;
+}
+
+video {
+    width: 200px;
+}
+
+audio {
+    width: 200px;
+}
+
+.common1 {
+    max-width: 50%;
+    word-wrap: break-word;
+    background: #ecedef;
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+}
+
+.common2 {
+    max-width: 50%;
+    word-wrap: break-word;
+    background: #ecedef;
+    padding: 10px;
+    margin-left: 10px;
+    border-radius: 5px;
+}
+
+.flex-start {
+    display: flex;
+    justify-content: start;
+    margin: 10px
+}
+
+.flex-end {
+    display: flex;
+    justify-content: end;
+    margin: 10px
 }
