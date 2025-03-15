@@ -153,7 +153,7 @@ class Client {
                 this.msgs.innerHTML += `<div class="msg right">
           <div class="flex-end">
             <div class="common1">${this.input.value.trim()}</div>
-            <div>你</div>
+            <div>我</div>
           </div>
             
             </div>`;
@@ -192,7 +192,7 @@ class Client {
             <div class="common1">
                 <img class="sendimg" src="${base64}" alt=""/>
            </div>
-            <div>你</div>
+            <div>我</div>
           </div>
             </div>`;
                 this.run();
@@ -224,7 +224,7 @@ class Client {
                         <div class="common1">
                             <audio src="${url}" controls></audio>
                         </div>
-                        <div>你</div>
+                        <div>我</div>
                     </div>
                 </div>`;
                 } else {
@@ -233,7 +233,7 @@ class Client {
                         <div class="common1">
                             <video src="${url}" controls></video>
                         </div>
-                        <div>你</div>
+                        <div>我</div>
                     </div>
                 </div>`;
                 }
@@ -262,7 +262,7 @@ class Client {
                         <div class="common1">
                             <a class="sendfile" href="${url}" download="${file.name}">${file.name}</a>
                         </div>
-                        <div>你</div>
+                        <div>我</div>
                     </div>
                 </div>`;
             this.run()
@@ -333,6 +333,8 @@ class Client {
     run() {
         this.msgs.scrollTo(0, this.msgs.scrollHeight)
     }
+
+
 }
 
 new Client();
