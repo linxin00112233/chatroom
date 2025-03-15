@@ -6,75 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<style>
-    body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .content {
-        width: 400px;
-        height: 600px;
-        border: 1px solid #000;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .msgs {
-        flex: 1;
-        overflow: auto;
-    }
-
-    .input {
-        flex: 0.1;
-        display: flex;
-        align-items: center;
-        padding: 0 20px;
-        justify-content: space-between;
-        border-top: 1px solid #000;
-    }
-
-    .input input {
-        height: 50%;
-        width: 70%;
-        outline: none;
-    }
-
-    .tips {
-        width: 100%;
-        text-align: center;
-        font-size: 11px;
-        color: #e62e16;
-    }
-
-    .msg {
-        width: 100%;
-    }
-
-    .msg.right {
-        text-align: right;
-    }
-
-    .msg.left {
-        text-align: left;
-    }
-</style>
+//导入样式文件
+<link rel="stylesheet" href="./index.css"></link>
 
 <body>
-    <h1>在线聊天室</h1>
-    <div class="content">
-        <div class="msgs" id="msgs">
+<h1>在线聊天室</h1>
+<div class="content">
+    <div class="msgs" id="msgs">
 
-        </div>
-        <div class="input">
-            <input type="text" id="input">
-            <input type="file">
-            <button id="btn">确定</button>
-        </div>
     </div>
-    <script src="./index.js"></script>
+    <div class="input">
+        <input type="text" id="input">
+        <div class="photo">
+            <img src="./images/photo.png">
+            <input type="file" id="file">
+        </div>
+        <button id="btn">确定</button>
+    </div>
+</div>
+<script src="./index.js"></script>
 </body>
 
 </html>
