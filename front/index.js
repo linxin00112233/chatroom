@@ -40,7 +40,6 @@ class Client {
         this.ws = new WebSocket("ws://localhost:3000");
         //连接错误回调函数
         this.ws.onerror = (error) => {
-            console.log(error);
             this.msgs.innerHTML += `<div class="tips">${JSON.stringify(error)}</div>`;
         };
         // 接收消息
@@ -66,14 +65,7 @@ class Client {
             if (data.id === this.id) return;
             //渲染图片
             if (data.msgtype === 'img') {
-                this.msgs.innerHTML += `<div class="msg left">
-            <div class="flex-start">
-            <div>${data.userName}</div>
-            <div class="common2">
-             <img class="sendimg" src="${data.message}" alt=""/>
-</div>
-            </div>
-          </div>`;
+                this.msgs.innerHTML += this.createLeftHtml(data, `<img class="sendimg" src="${data.message}" alt=""/>`)
                 this.downImgs()
                 this.run();
                 return
@@ -81,55 +73,25 @@ class Client {
 
             //渲染其他文件
             if (data.msgtype === 'file') {
-                const blob = new Blob([this.base64ToArrayBuffer(data.message)], {type: data.fileType});
-                const url = URL.createObjectURL(blob);
-                this.msgs.innerHTML += `<div class="msg left">
-                    <div class="flex-start">
-                        <div>${data.userName}</div>
-                        <div class="common2">
-                            <a class="sendfile" href="${url}" download="${data.fileName}">${data.fileName}</a>
-                        </div>
-                    </div>
-                </div>`;
+                const url = this.createUrl(this.base64ToArrayBuffer(data.message), data)
+                this.msgs.innerHTML += this.createLeftHtml(data, `<a class="sendfile" href="${url}" download="${data.fileName}">${data.fileName}</a>`)
                 this.run();
                 return;
             }
 
             //渲染视频和音频
             if (data.msgtype === 'audio' || data.msgtype === 'video') {
-                const blob = new Blob([this.base64ToArrayBuffer(data.message)], {type: data.fileType});
-                const url = URL.createObjectURL(blob);
+                const url = this.createUrl(this.base64ToArrayBuffer(data.message), data)
                 if (data.msgtype === 'audio') {
-                    this.msgs.innerHTML += `<div class="msg left">
-                    <div class="flex-start">
-                        <div>${data.userName}</div>
-                        <div class="common2">
-                            <audio src="${url}" controls></audio>
-                        </div>
-                    </div>
-                </div>`;
+                    this.msgs.innerHTML += this.createLeftHtml(data, `<audio src="${url}" controls></audio>`)
                 } else {
-                    this.msgs.innerHTML += `<div class="msg left">
-                    <div class="flex-start">
-                        <div>${data.userName}</div>
-                        <div class="common2">
-                            <video src="${url}" controls></video>
-                        </div>
-                    </div>
-                </div>`;
+                    this.msgs.innerHTML += this.createLeftHtml(data, `<video src="${url}" controls></video>`)
                 }
-
                 this.run();
                 return;
             }
             //判断是否是自己发的消息，不是自己发的消息则显示
-
-            this.msgs.innerHTML += `<div class="msg left">
-            <div class="flex-start">
-            <div>${data.userName}</div>
-            <div class="common2">${data.message}</div>
-            </div>
-          </div>`;
+            this.msgs.innerHTML += this.createLeftHtml(data, `${data.message}`)
             this.run();
             console.log(data);
         };
@@ -147,22 +109,14 @@ class Client {
                     alert("用户名不能超过5个字符")
                     return
                 }
-                this.ws.send(JSON.stringify({userName: this.input.value.trim()}));
+                this.sendMessages({userName: this.input.value.trim()})
                 this.input.placeholder = "输入你的消息...";
             } else {
-                this.msgs.innerHTML += `<div class="msg right">
-          <div class="flex-end">
-            <div class="common1">${this.input.value.trim()}</div>
-            <div>我</div>
-          </div>
-            
-            </div>`;
-                this.ws.send(
-                    JSON.stringify({
-                        userName: this.userName,
-                        message: this.input.value.trim(),
-                    })
-                );
+                this.msgs.innerHTML += this.createRightHtml(`${this.input.value.trim()}`)
+                this.sendMessages({
+                    userName: this.userName,
+                    message: this.input.value.trim(),
+                })
                 this.run();
             }
             this.input.value = "";
@@ -171,7 +125,6 @@ class Client {
 
     //发送文件
     sendFiles(e) {
-        // console.log(e)
         if (!this.userName) {
             alert("请先输入用户名!")
             return
@@ -181,102 +134,58 @@ class Client {
         }
         const file = e.target.files[0];
         console.log(file)
-
-        //图片
-        if (file.type.includes('image')) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const base64 = event.target.result;
-                this.msgs.innerHTML += `<div class="msg right">
-          <div class="flex-end">
-            <div class="common1">
-                <img class="sendimg" src="${base64}" alt=""/>
-           </div>
-            <div>我</div>
-          </div>
-            </div>`;
-                this.run();
-                this.downImgs();
-                this.ws.send(
-                    JSON.stringify({
-                        userName: this.userName,
-                        message: base64,
-                        msgtype: 'img'
-                    })
-                );
-
-            };
-            reader.readAsDataURL(file);
-            return
-        }
-
-        //音频、视频
-        if (file.type.includes('audio') || file.type.includes('video')) {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const arrayBuffer = event.target.result;
-                const blob = new Blob([arrayBuffer], {type: file.type});
-                const url = URL.createObjectURL(blob);
-                const base64 = this.arrayBufferToBase64(arrayBuffer);
-                if (file.type.includes('audio')) {
-                    this.msgs.innerHTML += `<div class="msg right">
-                    <div class="flex-end">
-                        <div class="common1">
-                            <audio src="${url}" controls></audio>
-                        </div>
-                        <div>我</div>
-                    </div>
-                </div>`;
-                } else {
-                    this.msgs.innerHTML += `<div class="msg right">
-                    <div class="flex-end">
-                        <div class="common1">
-                            <video src="${url}" controls></video>
-                        </div>
-                        <div>我</div>
-                    </div>
-                </div>`;
-                }
-                this.ws.send(
-                    JSON.stringify({
-                        userName: this.userName,
-                        message: base64,
-                        msgtype: file.type.includes('audio') ? 'audio' : 'video',
-                    })
-                );
-                this.run()
-            };
-            reader.readAsArrayBuffer((file))
-            return
-        }
-
-        //其他文件
+        //音频、视频、图片、其他文件
         const reader = new FileReader();
         reader.onload = (event) => {
             const arrayBuffer = event.target.result;
-            const blob = new Blob([arrayBuffer], {type: file.type});
-            const url = URL.createObjectURL(blob);
+            const url = this.createUrl(arrayBuffer, file)
             const base64 = this.arrayBufferToBase64(arrayBuffer);
-            this.msgs.innerHTML += `<div class="msg right">
-                    <div class="flex-end">
-                        <div class="common1">
-                            <a class="sendfile" href="${url}" download="${file.name}">${file.name}</a>
-                        </div>
-                        <div>我</div>
-                    </div>
-                </div>`;
-            this.run()
-            console.log(arrayBuffer)
-            this.ws.send(
-                JSON.stringify({
+            //音频
+            if (file.type.includes('audio')) {
+                this.msgs.innerHTML += this.createRightHtml(`<audio src="${url}" controls></audio>`)
+                //视频
+            } else if (file.type.includes('video')) {
+                this.msgs.innerHTML += this.createRightHtml(`<video src="${url}" controls></video>`)
+                //图片
+            } else if (file.type.includes('image')) {
+                this.msgs.innerHTML += this.createRightHtml(`<img class="sendimg" src="data:image/*;base64,${base64}" alt=""/>`)
+                this.downImgs();
+                //其他文件
+            } else {
+                this.msgs.innerHTML += this.createRightHtml(`<a class="sendfile" href="${url}" download="${file.name}">${file.name}</a>`)
+            }
+            if (file.type.includes('audio') || file.type.includes('video')) {
+                this.sendMessages({
+                    userName: this.userName,
+                    message: base64,
+                    msgtype: file.type.includes('audio') ? 'audio' : 'video',
+                })
+            } else if (file.type.includes('image')) {
+                this.sendMessages({
+                    userName: this.userName,
+                    message: 'data:image/*;base64,' + base64,
+                    msgtype: 'img'
+                })
+            } else {
+                this.sendMessages({
                     userName: this.userName,
                     message: base64,
                     msgtype: 'file',
                     fileName: file.name
                 })
-            );
-        }
+            }
+
+
+            this.run()
+        };
         reader.readAsArrayBuffer((file))
+    }
+
+    //发送消息
+    sendMessages(message) {
+        this.ws.send(
+            JSON.stringify(message)
+        );
     }
 
     //将arrayBuffer转base64
@@ -299,6 +208,36 @@ class Client {
             bytes[i] = binaryString.charCodeAt(i);
         }
         return bytes.buffer;
+    }
+
+    //生成临时地址
+    createUrl(value, data) {
+        const blob = new Blob([value], {type: data.fileType});
+        return URL.createObjectURL(blob);
+    }
+
+    //生成左边消息结构
+    createLeftHtml(data, html) {
+        return `<div class="msg left">
+                    <div class="flex-start">
+                        <div>${data.userName}</div>
+                        <div class="common2">
+                            ${html}
+                        </div>
+                    </div>
+                </div>`
+    }
+
+    //生成右边消息结构
+    createRightHtml(html) {
+        return `<div class="msg right">
+                    <div class="flex-end">
+                        <div class="common1">
+                           ${html}
+                        </div>
+                        <div>我</div>
+                    </div>
+                </div>`
     }
 
     //用于遍历所有图片，下载图片
