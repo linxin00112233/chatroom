@@ -142,6 +142,11 @@ class Client {
             if (!this.userName) {
                 // 去除空格
                 this.userName = this.input.value.trim();
+                if (this.userName.length > 5) {
+                    this.userName = null;
+                    alert("用户名不能超过5个字符")
+                    return
+                }
                 this.ws.send(JSON.stringify({userName: this.input.value.trim()}));
                 this.input.placeholder = "输入你的消息...";
             } else {

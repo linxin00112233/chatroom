@@ -63,6 +63,7 @@ wss.on("connection", (ws) => {
 
 //系统消息
 function systemMessage(text) {
+    //遍历所有用户，发送消息
     Users.forEach((user) => {
         user.send(JSON.stringify(text));
     });
@@ -70,6 +71,7 @@ function systemMessage(text) {
 
 //用户消息
 function userMessage(text) {
+    //遍历所有用户，发送消息
     Users.forEach((user) => {
         user.send(JSON.stringify(text));
     });
