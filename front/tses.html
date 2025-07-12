@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div>123</div>
+<script>
+    let obj1 = {
+        a: {
+            b: {
+                c: {
+                    d: 1
+                }
+            }
+        }
+    }
+    let get = function (obj, arr) {
+        if (typeof obj !== 'object') {
+            return
+        }
+        return arr.reduce((pre, cur) => {
+            return pre[cur]
+        }, obj)
+
+    }
+    let res = get(obj1, ['a', 'b', 'c', 'd'])
+    console.log(res)
+</script>
+</body>
+</html>

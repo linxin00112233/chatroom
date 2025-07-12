@@ -2,15 +2,17 @@ import {WebSocketServer} from "ws";
 import http from "http";
 import {v4 as uuidv4} from "uuid";
 
-
+//创建一个http服务器
 const server = http.createServer();
+//创建一个websocket服务器
 const wss = new WebSocketServer({server});
-
+//端口
 const port = 3000;
 
 //用于存储用户信息
 const Users = new Set();
 
+//监听连接
 wss.on("connection", (ws) => {
 
     //添加用户

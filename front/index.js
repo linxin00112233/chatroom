@@ -174,8 +174,6 @@ class Client {
                     fileName: file.name
                 })
             }
-
-
             this.run()
         };
         reader.readAsArrayBuffer((file))
